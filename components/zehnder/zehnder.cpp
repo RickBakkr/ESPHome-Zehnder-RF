@@ -227,10 +227,10 @@ void ZehnderRF::rfHandleReceived(const uint8_t *const pData, const uint8_t dataL
   ESP_LOGD(TAG, "Current state: 0x%02X", this->state_);
 
   if ((pResponse->command == FAN_TYPE_FAN_SETTINGS) &&
-      (pResponse->rx_type == this->config_.fan_my_device_type) &&
-      (pResponse->rx_id == this->config_.fan_my_device_id)) {
+      (pResponse->tx_id == this->config_.fan_main_unit_id)) {
     ESP_LOGD(TAG, "Passive fan settings; speed: 0x%02X voltage: %i timer: %i",
-             pResponse->payload.fanSettings.speed, pResponse->payload.fanSettings.voltage,
+             pResponse->payload.fanSettings.speed,
+             pResponse->payload.fanSettings.voltage,
              pResponse->payload.fanSettings.timer);
     this->state = pResponse->payload.fanSettings.speed > 0;
     this->speed = pResponse->payload.fanSettings.speed;
