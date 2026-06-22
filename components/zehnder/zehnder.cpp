@@ -638,6 +638,10 @@ void ZehnderRF::rfComplete(void) {
 void ZehnderRF::rfHandler(void) {
   switch (this->rfState_) {
     case RfStateIdle:
+      // Keep radio in receive for passive receipt.
+      if (this->rf_->getMode() != nrf905::Receive) {
+        this->rf_->setMode(nrf905::Receive);
+      }
       break;
 
     case RfStateWaitAirwayFree:
