@@ -367,6 +367,9 @@ void ZehnderRF::rfHandleReceived(const uint8_t *const pData, const uint8_t dataL
       break;
 
     case StateWaitQueryResponse:
+      ESP_LOGD(TAG, "QueryResponse frame: cmd=0x%02X rx_type=0x%02X rx_id=0x%02X tx_type=0x%02X tx_id=0x%02X",
+               pResponse->command, pResponse->rx_type, pResponse->rx_id,
+               pResponse->tx_type, pResponse->tx_id);
       if ((pResponse->rx_type == this->config_.fan_my_device_type) &&  // If type
           (pResponse->rx_id == this->config_.fan_my_device_id)) {      // and id match, it is for us
         switch (pResponse->command) {
@@ -447,6 +450,9 @@ void ZehnderRF::rfHandleReceived(const uint8_t *const pData, const uint8_t dataL
     default:
       ESP_LOGD(TAG, "Received frame from unknown device in unknown state; type 0x%02X from ID 0x%02X type 0x%02X",
                pResponse->command, pResponse->tx_id, pResponse->tx_type);
+      ESP_LOGD(TAG, "OP frame: cmd=0x%02X rx_type=0x%02X rx_id=0x%02X tx_type=0x%02X tx_id=0x%02X",
+         pResponse->command, pResponse->rx_type, pResponse->rx_id,
+         pResponse->tx_type, pResponse->tx_id);
       break;
   }
 }
