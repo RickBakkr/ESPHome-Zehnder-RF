@@ -178,15 +178,15 @@ void ZehnderRF::loop(void) {
 
           this->state_ = StateStartDiscovery;
         } else {
-          ESP_LOGD(TAG, "Config data valid, start polling");
-
+          ESP_LOGD(TAG, "Config data valid, setting initial speed to 1");
           rfConfig = this->rf_->getConfig();
           rfConfig.rx_address = this->config_.fan_networkId;
           this->rf_->updateConfig(&rfConfig);
           this->rf_->writeTxAddress(this->config_.fan_networkId);
-
-          // Start with query
-          this->queryDevice();
+          this->state = true;
+          this->speed = 1;
+          this->setSpeed(1, 0);
+          this->publish_state();
         }
       }
       break;
@@ -202,9 +202,10 @@ void ZehnderRF::loop(void) {
       if (newSetting == true) {
         this->setSpeed(newSpeed, newTimer);
       } else {
-        if ((millis() - this->lastFanQuery_) > this->interval_) {
-          this->queryDevice();
-        }
+        // Uncommented, as this query function does not seem to work with WHR anyway ... 
+        //if ((millis() - this->lastFanQuery_) > this->interval_) {
+        //  this->queryDevice();
+        //}
       }
       break;
 
