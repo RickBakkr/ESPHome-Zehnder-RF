@@ -325,6 +325,21 @@ void ZehnderRF::rfHandleReceived(const uint8_t *const pData, const uint8_t dataL
            pResponse->command, pResponse->rx_type, pResponse->rx_id,
            pResponse->tx_type, pResponse->tx_id);
       switch (pResponse->command) {
+        case FAN_FRAME_0B:   // WHR 930 bevestigt join met 0x0B i.p.v. 0x0D
+          if ((pResponse->rx_type == this->config_.fan_my_device_type) &&
+              (pResponse->rx_id   == this->config_.fan_my_device_id)   &&
+              (pResponse->tx_type == this->config_.fan_main_unit_type) &&
+              (pResponse->tx_id   == this->config_.fan_main_unit_id)) {
+            ESP_LOGD(TAG, "Discovery: join confirmed via 0x0B");
+            this->rfComplete();
+            ESP_LOGD(TAG, "Saving pairing config");
+            this->pref_.save(&this->config_);
+            this->state_ = StateIdle;
+          } else {
+            ESP_LOGW(TAG, "JoinComplete: 0x0B from unexpected Type 0x%02X ID 0x%02X",
+                     pResponse->tx_type, pResponse->tx_id);
+          }
+          break;
         case FAN_TYPE_QUERY_NETWORK:
           if ((pResponse->rx_type == this->config_.fan_main_unit_type) &&
               (pResponse->rx_id == this->config_.fan_main_unit_id) &&
