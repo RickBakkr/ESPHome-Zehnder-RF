@@ -105,6 +105,11 @@ void nRF905::loop() {
       if (this->onRxComplete != NULL) {
         this->onRxComplete(buffer, NRF905_MAX_FRAMESIZE);
       }
+
+      // attempt to force back into receive mode when idle
+      this->setMode(Idle);
+      this->setMode(Receive);
+      
     } else if (state == (1 << NRF905_STATUS_DR)) {
       addrMatch = false;
 
