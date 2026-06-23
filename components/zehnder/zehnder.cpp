@@ -640,9 +640,16 @@ void ZehnderRF::rfComplete(void) {
 void ZehnderRF::rfHandler(void) {
   switch (this->rfState_) {
     case RfStateIdle:
-      // Keep radio in receive for passive receipt.
-      if (this->rf_->getMode() != nrf905::Receive) {
+      static uint32_t lastRearm = 0;
+      static uint32_t rearmCount = 0;
+      if (millis() - lastRearm > 500) {
+        lastRearm = millis();
+        this->rf_->setMode(nrf905::Idle);
         this->rf_->setMode(nrf905::Receive);
+        // Log elke 20e her-arm (~10s) zodat je ziet dat het loopt zonder spam
+        if (++rearmCount % 20 == 0) {
+          ESP_LOGD(TAG, "RX re-armed (%u x), still listening", rearmCount);
+        }
       }
       break;
 
