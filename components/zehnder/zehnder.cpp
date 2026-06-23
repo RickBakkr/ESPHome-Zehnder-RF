@@ -185,8 +185,10 @@ void ZehnderRF::loop(void) {
           this->rf_->writeTxAddress(this->config_.fan_networkId);
           this->state = true;
           this->speed = 1;
+          this->state_ = StateIdle;
           this->setSpeed(1, 0);
           this->publish_state();
+
         }
       }
       break;
